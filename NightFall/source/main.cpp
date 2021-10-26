@@ -84,19 +84,27 @@ Result Init_Services(void)
 void close_Services()
 {
 	brls::Logger::debug("Closing Services");
+	brls::Logger::debug("Closing setsys");
 	setsysExit();
+	brls::Logger::debug("Closing amssu");
 	amssuExit();
+	brls::Logger::debug("Closing spl");
 	splExit();
+	brls::Logger::debug("Closing sm");
 	smExit();
+	brls::Logger::debug("Closing hiddbg");
 	hiddbgExit();
-	nifmExit();
+	brls::Logger::debug("Closing psm");
 	psmExit();
+	brls::Logger::debug("Closing nifm");
+	nifmExit();
+	brls::Logger::debug("Closed");
 }
 
 void deletetemp()
 {
-	brls::Logger::debug("Deleting temporal folders");
-	FS::DeleteDir("/switch/NightFall/temp/");
+	//brls::Logger::debug("Deleting temporal folders");
+	//FS::DeleteDir("/switch/NightFall/temp/");
 	FS::DeleteFile("/switch/NightFall/temp.json");
 }
 
@@ -104,7 +112,6 @@ void InitFolders()
 {
 	if (R_SUCCEEDED(FS::createdir("/switch/NightFall/")))
 		brls::Logger::debug("se ha creado la carpeta");
-	deletetemp();
 	if (R_SUCCEEDED(FS::createdir("/switch/NightFall/temp/")))
 		brls::Logger::debug("se ha creado la carpeta");
 	if (R_SUCCEEDED(FS::createdir("/switch/NightFall/Firmwares/")))
@@ -164,8 +171,9 @@ void CheckHardware()
 int main(int argc, char *argv[])
 {
 	// init
-	apmInitialize();
-	Chain();
+	appletSetAutoSleepDisabled(true);
+	appletSetFocusHandlingMode(AppletFocusHandlingMode_NoSuspend);
+
 
 	// Init the app
 	InitFolders();
@@ -218,6 +226,9 @@ int main(int argc, char *argv[])
 		std::ifstream i("/switch/NightFall/actual.json");
 		i >> j;
 		i.close();
+		std::string download = Conf["URL"].get<std::string>() + j["intfw"].get<std::string>();
+		brls::Logger::debug(download);
+		net.Download(download, "/switch/NightFall/temp.json");
 	}
 
 	// Create a view
@@ -244,7 +255,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			std::snprintf(firmwarever, sizeof(firmwarever), "main/tabs/Firmware/update/update_required"_i18n.c_str());
+			std::snprintf(firmwarever, sizeof(firmwarever), "%s: %s", "main/tabs/Firmware/update/update_required"_i18n.c_str(), (j["Firmwver"].get<std::string>()).c_str());
 			onlineupdate = true;
 		}
 	}
@@ -264,10 +275,6 @@ int main(int argc, char *argv[])
 		stagedFrame->setTitle("main/tabs/Firmware/update/title"_i18n.c_str());
 		if (onlineupdate == true && is_patched == false && psm::GetBatteryState() >= 15)
 		{
-			Network::Net net = Network::Net();
-			std::string download = Conf["URL"].get<std::string>() + j["intfw"].get<std::string>();
-			brls::Logger::debug(download);
-			net.Download(download, "/switch/NightFall/temp.json");
 			stagedFrame->addStage(new PreInstallUpdatePage(stagedFrame, "main/tabs/Firmware/update/update_download"_i18n.c_str()));
 			stagedFrame->addStage(new DownloadUpdatePage(stagedFrame));
 			stagedFrame->addStage(new InstallUpdate(stagedFrame, j["Firmwver"].get<std::string>().c_str()));
@@ -360,7 +367,6 @@ int main(int argc, char *argv[])
 
 	// Add the root view to the stack
 	brls::Application::pushView(rootFrame);
-	UnChain();
 	// Run the app
 	while (brls::Application::mainLoop())
 	{
@@ -406,10 +412,12 @@ int main(int argc, char *argv[])
 		}
 	}
 	//make sure not screw the home botton
-	appletSetHandlingHomeButtonShortPressedEnabled(false);
-	close_Services();
+	appletSetFocusHandlingMode(AppletFocusHandlingMode_SuspendHomeSleep);
+	appletSetAutoSleepDisabled(true);
+
 	deletetemp();
-	UnChain();
+	close_Services();
 	// Exit
-	return EXIT_SUCCESS;
+	return 0;
+	//return EXIT_SUCCESS;
 }

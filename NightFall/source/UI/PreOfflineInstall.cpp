@@ -35,7 +35,6 @@ PreOfflineInstallPage::PreOfflineInstallPage(brls::StagedAppletFrame *frame, std
             brls::Application::popView();
         else
         {
-			Chain();
             frame->nextStage();
             //DownloadUpdatePage::meme();
         }

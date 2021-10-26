@@ -36,6 +36,7 @@ bool showdialog = false;
 DownloadUpdatePage::DownloadUpdatePage(brls::StagedAppletFrame *frame)
     : frame(frame)
 {
+	appletSetHandlingHomeButtonShortPressedEnabled(true);
     // Label
     i18n::loadTranslations();
     std::ifstream i("/switch/NightFall/temp.json");
@@ -137,6 +138,8 @@ void DownloadUpdatePage::willDisappear(bool resetState)
 
 DownloadUpdatePage::~DownloadUpdatePage()
 {
+	Download.m_Download = false;
+	appletSetHandlingHomeButtonShortPressedEnabled(false);
     delete this->progressDisp;
     delete this->label;
     delete this->label1;

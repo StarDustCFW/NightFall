@@ -45,29 +45,35 @@ namespace BackGround
         this->m_running = true;
         this->m_Download = false;
         this->m_InstallUpdate = false;
-
         this->m_downloadUpdateThread = std::thread(&BackgroundTasks::DownloadUpdate, this);
     }
 
     BackgroundTasks::~BackgroundTasks()
     {
         this->m_running = false;
-
+        this->m_Download = false;
+        this->m_InstallUpdate = false;
         this->m_downloadUpdateThread.join();
     }
 
     void BackgroundTasks::DownloadUpdate()
     {
-		
+		 
+		std::ifstream co("/switch/NightFall/config.json");
+		if(!co.fail()){
+			 co >> config;
+			 co.close();
+		}
         Network::Net net = Network::Net();
         while (this->m_running)
         {
             if (this->m_Download == true)
             {
-                std::ifstream i("/switch/NightFall/temp.json");
-                i >> V1;
-                std::ifstream o("/switch/NightFall/config.json");
-                o >> config;
+				std::ifstream in("/switch/NightFall/temp.json");
+				if(!in.fail()){
+					in >> V1;
+					in.close();
+				 }
                 auto v7 = V1["titleids"].get<std::vector<std::string>>();
                 int n = v7.size();
 				this->m_DownloadProgress=0;
@@ -121,15 +127,13 @@ namespace BackGround
 							this->m_DownloadProgress++;
                     }
                 }
-                o.close();
-                //this->m_Download = false;
+               
+                this->m_Download = false;
             }
             if (this->m_InstallUpdate == true)
             {
                 /* Prevent the home button from being pressed during installation. */
                 hiddbgDeactivateHomeButton();
-                std::ifstream o("/switch/NightFall/config.json");
-                o >> config;
                 if (m_UpdateState == UpdateState::NeedsValidate)
                 {
                     brls::Logger::debug(this->m_path.c_str());
@@ -222,7 +226,7 @@ namespace BackGround
                 {
                     if (config["DeleteFolder"].get<int>() == 1){
                         FS::DeleteDir(this->m_path.c_str());
-					} else if (this->m_path == "/switch/NightFall/temp"){
+					} else if (this->m_path == "/switch/NightFall/temp/"){
 						if (!V1["fw_info"]["version"].empty()){
 							//move Temp Folder to Firmwares if not exist
 							rename("/switch/NightFall/temp",("/switch/NightFall/Firmwares/Firmware_"+V1["fw_info"]["version"].get<std::string>()).c_str());

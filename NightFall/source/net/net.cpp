@@ -24,24 +24,6 @@ SOFTWARE.*/
 #include "FS/FS.hpp"
 #include <borealis.hpp>
 
-void Chain(){
-	//no Sleep
-	appletSetHandlingHomeButtonShortPressedEnabled(true);
-	appletSetCpuBoostMode(ApmCpuBoostMode_FastLoad);
-	appletSetAutoSleepDisabled(true);
-	appletSetAutoSleepTimeAndDimmingTimeEnabled(false);
-	appletSetFocusHandlingMode(AppletFocusHandlingMode_NoSuspend);
-}
-
-void UnChain(){
-	//Normal
-	appletSetHandlingHomeButtonShortPressedEnabled(false);
-	appletSetCpuBoostMode(ApmCpuBoostMode_Normal);
-	appletSetAutoSleepDisabled(false);
-	appletSetAutoSleepTimeAndDimmingTimeEnabled(true);
-	appletSetFocusHandlingMode(AppletFocusHandlingMode_SuspendHomeSleep);
-}
-
 namespace Network
 {
     static struct curl_slist *hosts = NULL;
@@ -118,7 +100,7 @@ namespace Network
     bool Net::Download(string url, string filepath)
     {
 		if (FS::checkFile(filepath)){
-			brls::Logger::debug("File  "+ filepath+" exist download abort");
+			//brls::Logger::debug("File  "+ filepath+" exist download abort");
 			return false;
 		}
 		std::string out=filepath+".tmp";
