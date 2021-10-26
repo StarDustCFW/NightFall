@@ -22,8 +22,7 @@ SOFTWARE.*/
 #include <math.h>
 #include <fstream>
 #include <string>
-
-BackGround::BackgroundTasks Install;
+extern BackGround::BackgroundTasks Download;
 json v2;
 bool rebootdialog = false;
 
@@ -45,7 +44,7 @@ InstallUpdate::InstallUpdate(brls::StagedAppletFrame *frame, std::string label, 
     this->label1->setHorizontalAlign(NVG_ALIGN_CENTER);
     this->label1->setParent(this);
     brls::Logger::debug(path);
-    Install.m_path = path;
+    Download.m_path = path;
 }
 
 InstallUpdate::~InstallUpdate()
@@ -57,9 +56,9 @@ InstallUpdate::~InstallUpdate()
 
 void InstallUpdate::draw(NVGcontext *vg, int x, int y, unsigned width, unsigned height, brls::Style *style, brls::FrameContext *ctx)
 {
-    if (Install.m_InstallProgress == 5)
+    if (Download.m_InstallProgress == 5)
     {
-        Install.m_InstallUpdate = false;
+        Download.m_InstallUpdate = false;
         brls::Dialog *dialog = new brls::Dialog("InstallUpdate/reboot_dialog"_i18n.c_str());
         if (rebootdialog != true){
             rebootdialog = true;
@@ -67,11 +66,11 @@ void InstallUpdate::draw(NVGcontext *vg, int x, int y, unsigned width, unsigned 
         }
         this->frame->nextStage();
     }
-    else if (Install.m_InstallUpdate != true)
+    else if (Download.m_InstallUpdate != true)
     {
-        Install.m_InstallUpdate = true;
+        Download.m_InstallUpdate = true;
     }
-    this->progressDisp->setProgress(Install.m_InstallProgress, 5);
+    this->progressDisp->setProgress(Download.m_InstallProgress, 5);
     this->progressDisp->frame(ctx);
     this->label->frame(ctx);
     //this->label1->frame(ctx);

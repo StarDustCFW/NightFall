@@ -45,6 +45,7 @@ bool is_patched = false;
 bool HasEmummc = false;
 std::string fwstring = "";
 brls::SelectListItem *selectfirmoff;
+BackGround::BackgroundTasks Download;
 
 Result Init_Services(void)
 {
@@ -179,7 +180,6 @@ int main(int argc, char *argv[])
 	InitFolders();
 	i18n::loadTranslations();
 	
-	BackGround::BackgroundTasks meme;
 	Network::Net net = Network::Net();
 
 	brls::Logger::setLogLevel(brls::LogLevel::DEBUG);
@@ -231,6 +231,7 @@ int main(int argc, char *argv[])
 		net.Download(download, "/switch/NightFall/temp.json");
 	}
 
+
 	// Create a view
 	brls::TabFrame *rootFrame = new brls::TabFrame();
 	rootFrame->setTitle("NightFall");
@@ -257,6 +258,7 @@ int main(int argc, char *argv[])
 		{
 			std::snprintf(firmwarever, sizeof(firmwarever), "%s: %s", "main/tabs/Firmware/update/update_required"_i18n.c_str(), (j["Firmwver"].get<std::string>()).c_str());
 			onlineupdate = true;
+			Download.m_Download = true;
 		}
 	}
 	else
