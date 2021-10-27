@@ -68,6 +68,7 @@ void InstallUpdate::draw(NVGcontext *vg, int x, int y, unsigned width, unsigned 
     }
     else if (Download.m_InstallUpdate != true)
     {
+		Download.m_Download = false;
         Download.m_InstallUpdate = true;
     }
     this->progressDisp->setProgress(Download.m_InstallProgress, 5);

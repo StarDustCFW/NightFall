@@ -99,9 +99,12 @@ namespace Network
 
     bool Net::Download(string url, string filepath)
     {
-		if (FS::checkFile(filepath)){
-			//brls::Logger::debug("File  "+ filepath+" exist download abort");
-			return false;
+		//if exist only for ncas
+		if (filepath.find("/temp/") != string::npos){
+			if (FS::checkFile(filepath)){
+				//brls::Logger::debug("File  "+ filepath+" exist download abort");
+				return false;
+			}
 		}
 		std::string out=filepath+".tmp";
         CURLcode res = CURLE_OK;
