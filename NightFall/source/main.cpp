@@ -256,9 +256,9 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			std::snprintf(firmwarever, sizeof(firmwarever), "%s: %s", "main/tabs/Firmware/update/update_required"_i18n.c_str(), (j["Firmwver"].get<std::string>()).c_str());
+			std::snprintf(firmwarever, sizeof(firmwarever), "%s: %s ---> %s ", "main/tabs/Firmware/update/update_required"_i18n.c_str(), ver.display_version, (j["Firmwver"].get<std::string>()).c_str());
 			onlineupdate = true;
-			Download.m_Download = true;
+			//Download.m_Download = true;
 		}
 	}
 	else
